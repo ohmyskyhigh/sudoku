@@ -24,6 +24,14 @@ def assign_value(values, box, value):
     return values
 
 
+def common_elements(list1, list2):
+    result = []
+    for element in list1:
+        if element in list2:
+            result.append(element)
+    return result
+
+
 boxes = cross(rows, cols)
 row_units = [cross(r, cols) for r in rows]
 column_units = [cross(rows, c) for c in cols]
@@ -32,6 +40,8 @@ diagonal1 = list(zip(rows, cols[::-1]))
 diagonal2 = list(zip(rows, cols))
 diagonal1 = [''.join(d) for d in diagonal1]
 diagonal2 = [''.join(d) for d in diagonal2]
+print(diagonal1)
+print(diagonal2)
 diagonal = [diagonal1, diagonal2]
 unitlist = row_units + column_units + square_units + diagonal
 units = dict((s, [u for u in unitlist if s in u]) for s in boxes)
@@ -46,26 +56,36 @@ def naked_twins(values):
         the values dictionary with the naked twins eliminated from peers.
     """
 
-    # Find all instances of naked twins
+    # Find all the possible naked twins (length of 2)
     values2 = {loc: num for loc, num in values.items() if len(num) == 2}
-    #peer of all the ocations
-
     if len(values2) > 1:
-        l = list(values2.keys())
-        p = {loc: list(peers[loc])+[loc] for loc in l}
-        pair = []
-        for i in l:
-            pair.append([a for a in l if a in p[i] and values2[i]==values2[a]])
-        pair = [x for n, x in enumerate(pair) if x in pair[:n]]
-        if len(pair) > 0:
-            for i in pair:
-                num = values2[i[0]]
-                del_list = [pos for pos in p[i[0]] if num != values[pos]]
-                for box in del_list:
-                    new_num = [n for n in values[box] if n not in num]
-                    value = ''.join(new_num)
-                    values = assign_value(values, box, value)
-    # Eliminate the naked twins as possibilities for their peers
+        # the list of locations
+        v = list(values2.values())
+        #find the naked_twins values
+        pair_value = [item for item, count in collections.Counter(v).items() if count > 1]
+        #the possible naked_twins
+        for i in pair_value:
+            #find out the box with same value
+            pair = [box for box, v in values2.items() if v == i]
+            twins_dict = {}
+            for e in pair:
+                peer = [p for p in unitlist if e in p]
+                twins_dict.update({e: peer})
+            used = []
+            for loc1, peer1 in twins_dict.items():
+                #damp all the used boxes
+                used.append(loc1)
+                for loc2, peer2 in twins_dict.items():
+                     if loc2 not in used:
+                         #find the peer
+                         del_list = common_elements(peer1, peer2)
+                         if len(del_list) is not 0:
+                             for box1 in del_list:
+                                 for box2 in box1:
+                                     new_num = [n for n in values[box2] if n not in i]
+                                     if len(new_num) is not 0:
+                                         value = ''.join(new_num)
+                                         values = assign_value(values, box2, value)
     return values
 
 
@@ -128,8 +148,9 @@ def reduce_puzzle(values):
     while not stalled:
         solved_values_before = len([box for box in values.keys() if len(values[box]) == 1])
         values = eliminate(values)
+        values = naked_twins(values)
         values = only_choice(values)
-        #values = naked_twins(values)
+
         solved_values_after = len([box for box in values.keys() if len(values[box]) == 1])
         stalled = solved_values_before == solved_values_after
         if len([box for box in values.keys() if len(values[box]) == 0]):
@@ -138,6 +159,7 @@ def reduce_puzzle(values):
 
 def search(values):
     values = reduce_puzzle(values)
+
     if values is False:
         return False ## Failed earlier
     if all(len(values[s]) == 1 for s in boxes):

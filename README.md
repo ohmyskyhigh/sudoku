@@ -3,17 +3,25 @@
 
 # Question 1 (Naked Twins)
 Q: How do we use constraint propagation to solve the naked twins problem?  
-A: *Student should provide answer here*
+A: *there are three constrains, the potential answer of a box must be 2, there are 2 boxes share the same values,
+    and the two boxes needs to share same block
+    first I need to search the boxes with two possible values
+    and find a pair of boexes in share same unit, then change
+    erase that two possible values from their unit.*
 
 # Question 2 (Diagonal Sudoku)
 Q: How do we use constraint propagation to solve the diagonal sudoku problem?  
-A: *Student should provide answer here*
+A: *Each diagonal is a unit to add into unitlist, which are ['A9', 'B8', 'C7', 'D6', 'E5', 'F4', 'G3', 'H2', 'I1'] and
+    ['A1', 'B2', 'C3', 'D4', 'E5', 'F6', 'G7', 'H8', 'I9']. once unitlist has been updated
+    the diagonals will act as a constrain in solving the puzzle.
+    Basically the diagonals just an extra unit in unitlist, acting the same way as any other unit
+    like, row units and column units*
 
 ### Install
 
 This project requires **Python 3**.
 
-We recommend students install [Anaconda](https://www.continuum.io/downloads), a pre-packaged Python distribution that contains all of the necessary libraries and software for this project. 
+We recommend students install [Anaconda](https://www.continuum.io/downloads), a pre-packaged Python distribution that contains all of the necessary libraries and software for this project.
 Please try using the environment we provided in the Anaconda lesson of the Nanodegree.
 
 ##### Optional: Pygame
@@ -41,4 +49,3 @@ The setup is simple.  If you have not installed the client tool already, then yo
 To submit your code to the project assistant, run `udacity submit` from within the top-level directory of this project.  You will be prompted for a username and password.  If you login using google or facebook, visit [this link](https://project-assistant.udacity.com/auth_tokens/jwt_login) for alternate login instructions.
 
 This process will create a zipfile in your top-level directory named sudoku-<id>.zip.  This is the file that you should submit to the Udacity reviews system.
-
